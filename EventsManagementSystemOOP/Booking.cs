@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace EventsManagementSystemOOP
 {
-    class Program
+    class Booking
     {
-        public List<Event> Events { get; set; } = new List<Event>();
+        public static int _PrevID { private get; set; } = 0;
+        public int Id { get; set; } = ++_PrevID;
 
-
-        static void Main(string[] args)
+        public Booking()
         {
 
         }
