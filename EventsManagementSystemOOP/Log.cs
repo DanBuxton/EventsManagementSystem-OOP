@@ -6,16 +6,17 @@ using System.Threading.Tasks;
 
 namespace EventsManagementSystemOOP
 {
-    class Booking
+    class Log
     {
         public static int _PrevID { private get; set; } = 0;
         public int Id { get; set; } = ++_PrevID;
 
-        private readonly Event _event;
+        public string Details { get; set; }
+        public DateTime DateOfTransaction { get; set; } = DateTime.Now;
 
-        public Booking(Event e)
+        public Log(string details)
         {
-            _event = e;
+            Details = details;
         }
     }
 }
