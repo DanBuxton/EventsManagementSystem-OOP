@@ -6,14 +6,21 @@ using System.Threading.Tasks;
 
 namespace EventsManagementSystemOOP
 {
-    class Booking
+    internal sealed class Booking
     {
-        public static int _PrevID { private get; set; } = 0;
-        public int Id { get; set; } = ++_PrevID;
+        internal static int _PrevID { private get; set; } = 0;
+        internal int Id { get; set; } = ++_PrevID;
 
-        public Booking()
+        private Event _event;
+
+        public Booking(Event e)
         {
+            _event = e;
+        }
 
+        internal void RemoveEvent()
+        {
+            _event = null;
         }
     }
 }
