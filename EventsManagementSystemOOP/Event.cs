@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,61 +7,80 @@ using System.Threading.Tasks;
 
 namespace EventsManagementSystemOOP
 {
-    class Event
+    internal sealed class Event
     {
         public static int _TotalNumberOfEvents { get; set; } = 0;
 
-        public static int _PrevID { private get; set; } = 0;
+        public static int _PrevID { get; set; } = 0;
         public int Id { get; set; } = ++_PrevID;
 
-        public string Name { get; set; }
-        public int NumberOfTicketsTotal { get { return Bookings.Length; } }
-        public int NumberOfTicketsLeft { get; set; }
+        internal string Name { get; set; }
+        internal int NumberOfTicketsOverall { get; set; }
+        internal int NumberOfTicketsLeft { get; set; }
 
         private double pricePerTicket = 5.99;
-        public double PricePerTicket
+        internal double PricePerTicket
         {
             get => pricePerTicket;
             set
             {
-                pricePerTicket = (value > 0 ? value : pricePerTicket);
+                pricePerTicket = (value >= 0 ? value : pricePerTicket);
             }
         }
 
-        public DateTime DateAdded { get; set; } = DateTime.Now;
+        internal DateTime DateAdded { get; set; } = DateTime.Now;
 
-        internal Booking[] Bookings { get; set; }
+        internal List<Booking> Bookings { get; set; }
 
         public Event(string name, int numOfPlaces, double pricePerTicket)
         {
             Name = name;
-            NumberOfTicketsLeft = numOfPlaces;
             PricePerTicket = pricePerTicket;
 
-            Bookings = new Booking[numOfPlaces];
+            Bookings = new List<Booking>();
+            NumberOfTicketsLeft = numOfPlaces;
+            NumberOfTicketsOverall = numOfPlaces;
 
             _TotalNumberOfEvents++;
         }
 
-        public bool AddTickets(int ticketsToAdd)
+        internal bool RemoveAmountOfTickets(int noOfTickets)
+        {
+            bool result = Bookings.Count <= (NumberOfTicketsOverall - noOfTickets);
+
+            if (result)
+                AddTickets(-noOfTickets);
+
+            return result;
+        }
+
+        internal void AddTickets(int ticketsToAdd)
+        {
+            NumberOfTicketsOverall += ticketsToAdd;
+        }
+
+        internal bool AddBooking(Booking b)
         {
             try
             {
-                Booking[] bArray = new Booking[Bookings.Length + ticketsToAdd];
-
-                for (int i = 0; i < Bookings.Length; i++)
+                if (NumberOfTicketsOverall <= (NumberOfTicketsLeft - 1))
                 {
-                    bArray[i] = Bookings[i];
+                    Bookings.Add(b);
+
+                    --NumberOfTicketsLeft;
+
+                    return true;
                 }
-
-                Bookings = bArray;
-
-                return true;
             }
-            catch (Exception)
-            {
-                return false;
-            }
+            catch (Exception) { }
+
+            return false;
+        }
+
+        internal void RemoveBooking(Booking b)
+        {
+            Bookings.Remove(b);
+            ++NumberOfTicketsLeft;
         }
     }
 }

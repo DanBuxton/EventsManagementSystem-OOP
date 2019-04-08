@@ -6,17 +6,76 @@ using System.Threading.Tasks;
 
 namespace EventsManagementSystemOOP
 {
-    class Log
+    internal sealed class Log
     {
         public static int _PrevID { private get; set; } = 0;
         public int Id { get; set; } = ++_PrevID;
 
-        public string Details { get; set; }
+        string Details { get; set; }
         public DateTime DateOfTransaction { get; set; } = DateTime.Now;
 
-        public Log(string details)
+        public Log(TransactionDetails details)
         {
-            Details = details;
+            Details = details.ToString();
+        }
+
+        internal sealed class TransactionDetails
+        {
+            private readonly Event e = null;
+            private readonly Booking b = null;
+            private readonly TransType type;
+
+            public enum TransType
+            {
+                Add,
+                Update,
+                Delete,
+                Book,
+                Cancel
+            }
+
+            public TransactionDetails(Event ev, TransType type)
+            {
+                e = ev;
+                this.type = type;
+            }
+            public TransactionDetails(Booking book, TransType type)
+            {
+                b = book;
+                this.type = type;
+            }
+
+            public override string ToString()
+            {
+                string res = "Error";
+
+                if (e != null || b != null)
+                {
+                    switch (type)
+                    {
+                        case TransType.Add:
+                            res = "";
+                            break;
+                        case TransType.Update:
+                            res = "";
+                            break;
+                        case TransType.Delete:
+                            res = "";
+                            break;
+                        case TransType.Book:
+                            res = "";
+                            break;
+                        case TransType.Cancel:
+                            res = "";
+                            break;
+                        default:
+                            res = "";
+                            break;
+                    }
+                }
+
+                return res;
+            }
         }
     }
 }
