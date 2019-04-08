@@ -37,7 +37,7 @@ namespace EventsManagementSystemOOP
             Name = name;
             PricePerTicket = pricePerTicket;
 
-            Bookings = new List<Booking>();
+            Bookings = new Dictionary<int, Booking>();
             NumberOfTicketsLeft = numOfPlaces;
             NumberOfTicketsOverall = numOfPlaces;
 
@@ -61,26 +61,36 @@ namespace EventsManagementSystemOOP
 
         internal bool AddBooking(Booking b)
         {
+            bool result = false;
+
             try
             {
                 if (NumberOfTicketsOverall <= (NumberOfTicketsLeft - 1))
                 {
-                    Bookings.Add(b);
+                    Bookings.Add(b.Id, b);
 
-                    --NumberOfTicketsLeft;
+                    NumberOfTicketsLeft--;
 
-                    return true;
+                    result = true;
                 }
             }
             catch (Exception) { }
 
-            return false;
+            return result;
         }
 
-        internal void RemoveBooking(Booking b)
+        internal bool RemoveBooking(int id)
         {
-            Bookings.Remove(b);
-            ++NumberOfTicketsLeft;
+            bool result = Bookings.Remove(id);
+
+            if (result)
+                NumberOfTicketsLeft++;
+
+            return result;
+        }
+        internal bool RemoveBooking(Booking b)
+        {
+            return RemoveBooking(b.Id);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace EventsManagementSystemOOP
 
         private const int VIEW_EVENTS = 6;
         private const int VIEW_TRANSACTIONS = 7;
-        
+
         private const int EXIT = 8;
 
         static void Main(string[] args)
@@ -95,7 +95,7 @@ namespace EventsManagementSystemOOP
         {
 
         }
-        
+
         private static void ViewAllTransactions()
         {
 
