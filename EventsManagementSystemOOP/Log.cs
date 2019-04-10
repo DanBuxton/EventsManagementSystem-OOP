@@ -11,15 +11,15 @@ namespace EventsManagementSystemOOP
         public static int _PrevID { private get; set; } = 0;
         public int Id { get; set; } = ++_PrevID;
 
-        string Details { get; set; }
+        public string Details { get; set; }
         public DateTime DateOfTransaction { get; set; } = DateTime.Now;
 
-        public Log(TransactionDetails details)
+        public Log(LogDetails details)
         {
             Details = details.ToString();
         }
 
-        internal sealed class TransactionDetails
+        public sealed class LogDetails
         {
             private readonly Event e = null;
             private readonly Booking b = null;
@@ -34,14 +34,11 @@ namespace EventsManagementSystemOOP
                 Cancel
             }
 
-            public TransactionDetails(Event ev, TransType type)
+            public LogDetails(object ob, TransType type)
             {
-                e = ev;
-                this.type = type;
-            }
-            public TransactionDetails(Booking book, TransType type)
-            {
-                b = book;
+                e = ob as Event;
+                b = ob as Booking;
+
                 this.type = type;
             }
 

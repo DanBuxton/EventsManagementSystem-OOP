@@ -8,19 +8,14 @@ namespace EventsManagementSystemOOP
 {
     internal sealed class Booking
     {
-        internal static int _PrevID { private get; set; } = 0;
+        public static int _PrevID { private get; set; } = 0;
         internal int Id { get; set; } = ++_PrevID;
 
-        private Event _event;
+        public Event E { get; set; }
 
         public Booking(Event e)
         {
-            _event = e;
-        }
-
-        internal void RemoveEvent()
-        {
-            _event = null;
+            E = e;
         }
     }
 }

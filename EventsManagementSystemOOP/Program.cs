@@ -33,9 +33,6 @@ namespace EventsManagementSystemOOP
                 Console.ForegroundColor = ConsoleColor.Gray;
                 num = MenuResponse();
 
-                Console.WriteLine($"Number > {num}");
-                Console.ReadKey();
-
                 switch (num)
                 {
                     case ADD_EVENT:
@@ -60,15 +57,36 @@ namespace EventsManagementSystemOOP
                         ViewAllTransactions();
                         break;
                     case EXIT:
-
+                        DisplayMessage(msg: "Are you sure you want to exit, changes will not be saved? (y/n)", isWarning: true);
+                        string response = Console.ReadLine();
                         break;
                 }
             } while (num != EXIT);
+
+            Environment.Exit(0);
+        }
+
+        private static int GetNumber(int min = 1, int max = 9999)
+        {
+            int? result = null;
+
+            Console.WriteLine("Enter a number between {min} and {max}");
+
+            while (!result.HasValue || (result < min && result > max))
+            {
+                try
+                {
+                    result = int.Parse(Console.ReadLine());
+                }
+                catch (Exception) { }
+            }
+
+            return result.Value;
         }
 
         private static void AddAnEvent()
         {
-
+            Console.WriteLine($"number: {GetNumber()}");
         }
 
         private static void UpdateAnEvent()
@@ -101,24 +119,19 @@ namespace EventsManagementSystemOOP
 
         }
 
-        private static void DisplayError(string msg, ConsoleColor colorAfter = ConsoleColor.Gray)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"ERROR > {msg}");
-            Console.ForegroundColor = colorAfter;
-        }
-
         private static void DisplayMenu()
         {
-            Console.WriteLine("1  >  Add an event");
-            Console.WriteLine("2  >  Update an event");
-            Console.WriteLine("3  >  Delete an event");
-
-            Console.WriteLine("4  >  Book tickets");
-            Console.WriteLine("5  >  Remove a booking");
-
-            Console.WriteLine("6  >  View all events");
-            Console.WriteLine("7  >  View transaction log");
+            Console.WriteLine($"1  >  Add an event");
+            Console.WriteLine($"2  >  Update an event");
+            Console.WriteLine($"3  >  Delete an event");
+            Console.WriteLine();
+            Console.WriteLine($"4  >  Book tickets");
+            Console.WriteLine($"5  >  Remove a booking");
+            Console.WriteLine();
+            Console.WriteLine($"6  >  View all events");
+            Console.WriteLine($"7  >  View transaction log");
+            Console.WriteLine();
+            Console.WriteLine($"8  >  Exit");
 
             Console.WriteLine();
         }
@@ -141,14 +154,40 @@ namespace EventsManagementSystemOOP
                     {
                         res = num;
                     }
-                    else { DisplayError(msg: "Please enter a number between 1 and 7"); }
+                    else { DisplayMessage(msg: "Please enter a number between 1 and 7"); }
                 }
-                catch (OverflowException) { DisplayError(msg: "Too many characters", colorAfter: ConsoleColor.Gray); }
-                catch (FormatException) { DisplayError(msg: "Please enter a number character", colorAfter: ConsoleColor.Gray); }
-                catch (Exception) { DisplayError(msg: "Please enter a number", colorAfter: ConsoleColor.Gray); }
+                catch (OverflowException) { DisplayMessage(msg: "Too many characters", isError: true, colorAfter: ConsoleColor.Gray); }
+                catch (FormatException) { DisplayMessage(msg: "Please enter a number", isError: true, colorAfter: ConsoleColor.Gray); }
+                catch (Exception) { DisplayMessage(msg: "Please enter a number", isError: true, colorAfter: ConsoleColor.Gray); }
             }
 
             return res.Value;
+        }
+        
+        private static void DisplayMessage(string msg, ConsoleColor colorAfter = ConsoleColor.Gray, bool isError = false, bool isWarning = false)
+        {
+            ConsoleColor color;
+            string message;
+
+            if (isError)
+            {
+                color = ConsoleColor.Red;
+                message = $"ERROR: {msg}";
+            }
+            else if (isWarning)
+            {
+                color = ConsoleColor.DarkYellow;
+                message = $"Warning! {msg}";
+            }
+            else
+            {
+                color = ConsoleColor.Gray;
+                message = msg;
+            }
+
+            Console.ForegroundColor = color;
+            Console.WriteLine(message);
+            Console.ForegroundColor = colorAfter;
         }
     }
 }

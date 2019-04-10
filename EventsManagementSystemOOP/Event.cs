@@ -14,12 +14,12 @@ namespace EventsManagementSystemOOP
         public static int _PrevID { get; set; } = 0;
         public int Id { get; set; } = ++_PrevID;
 
-        internal string Name { get; set; }
-        internal int NumberOfTicketsOverall { get; set; }
-        internal int NumberOfTicketsLeft { get; set; }
+        public string Name { get; set; }
+        public int NumberOfTicketsOverall { get; set; }
+        public int NumberOfTicketsLeft { get; set; }
 
         private double pricePerTicket = 5.99;
-        internal double PricePerTicket
+        public double PricePerTicket
         {
             get => pricePerTicket;
             set
@@ -28,7 +28,7 @@ namespace EventsManagementSystemOOP
             }
         }
 
-        internal DateTime DateAdded { get; set; } = DateTime.Now;
+        public DateTime DateAdded { get; set; } = DateTime.Now;
 
         public Dictionary<int, Booking> Bookings { get; set; } = new Dictionary<int, Booking>();
 
@@ -44,7 +44,7 @@ namespace EventsManagementSystemOOP
             _TotalNumberOfEvents++;
         }
 
-        internal bool RemoveAmountOfTickets(int noOfTickets)
+        public bool RemoveAmountOfTickets(int noOfTickets)
         {
             bool result = Bookings.Count <= (NumberOfTicketsOverall - noOfTickets);
 
@@ -54,12 +54,12 @@ namespace EventsManagementSystemOOP
             return result;
         }
 
-        internal void AddTickets(int ticketsToAdd)
+        public void AddTickets(int ticketsToAdd)
         {
             NumberOfTicketsOverall += ticketsToAdd;
         }
 
-        internal bool AddBooking(Booking b)
+        public bool AddBooking(Booking b)
         {
             bool result = false;
 
@@ -67,6 +67,7 @@ namespace EventsManagementSystemOOP
             {
                 if (NumberOfTicketsOverall <= (NumberOfTicketsLeft - 1))
                 {
+
                     Bookings.Add(b.Id, b);
 
                     NumberOfTicketsLeft--;
@@ -79,7 +80,7 @@ namespace EventsManagementSystemOOP
             return result;
         }
 
-        internal bool RemoveBooking(int id)
+        public bool RemoveBooking(int id)
         {
             bool result = Bookings.Remove(id);
 
@@ -88,7 +89,7 @@ namespace EventsManagementSystemOOP
 
             return result;
         }
-        internal bool RemoveBooking(Booking b)
+        public bool RemoveBooking(Booking b)
         {
             return RemoveBooking(b.Id);
         }
