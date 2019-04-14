@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EventsManagementSystemOOP
 {
-    internal sealed class Log
+    public sealed class Log
     {
         public static int _PrevID { private get; set; } = 0;
         public int Id { get; set; } = ++_PrevID;
@@ -34,44 +34,17 @@ namespace EventsManagementSystemOOP
                 Cancel
             }
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="ob">An Event or Booking instance</param>
+            /// <param name="type"></param>
             public LogDetails(object ob, TransType type)
             {
                 e = ob as Event;
                 b = ob as Booking;
 
                 this.type = type;
-            }
-
-            public override string ToString()
-            {
-                string res = "Error";
-
-                if (e != null || b != null)
-                {
-                    switch (type)
-                    {
-                        case TransType.Add:
-                            res = "";
-                            break;
-                        case TransType.Update:
-                            res = "";
-                            break;
-                        case TransType.Delete:
-                            res = "";
-                            break;
-                        case TransType.Book:
-                            res = "";
-                            break;
-                        case TransType.Cancel:
-                            res = "";
-                            break;
-                        default:
-                            res = "";
-                            break;
-                    }
-                }
-
-                return res;
             }
         }
     }

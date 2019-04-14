@@ -57,8 +57,10 @@ namespace EventsManagementSystemOOP
                         ViewAllTransactions();
                         break;
                     case EXIT:
-                        DisplayMessage(msg: "Are you sure you want to exit, changes will not be saved? (y/n)", isWarning: true);
-                        string response = Console.ReadLine();
+                        DisplayMessage(msg: "Are you sure you want to exit, changes will not be saved? (y/n) ", isWarning: true, hasNewLine: false);
+                        char response = Console.ReadLine()[0];
+
+
                         break;
                 }
             } while (num != EXIT);
@@ -164,7 +166,8 @@ namespace EventsManagementSystemOOP
             return res.Value;
         }
         
-        private static void DisplayMessage(string msg, ConsoleColor colorAfter = ConsoleColor.Gray, bool isError = false, bool isWarning = false)
+        private static void DisplayMessage(string msg, ConsoleColor colorAfter = ConsoleColor.Gray, 
+            bool isError = false, bool isWarning = false, bool hasNewLine = true)
         {
             ConsoleColor color;
             string message;
@@ -186,7 +189,7 @@ namespace EventsManagementSystemOOP
             }
 
             Console.ForegroundColor = color;
-            Console.WriteLine(message);
+            Console.Write(message + (hasNewLine ? Environment.NewLine : null));
             Console.ForegroundColor = colorAfter;
         }
     }

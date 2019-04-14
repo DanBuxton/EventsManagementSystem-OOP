@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EventsManagementSystemOOP
 {
-    internal sealed class Event
+    public sealed class Event
     {
         public static int _TotalNumberOfEvents { get; set; } = 0;
 
@@ -44,7 +44,7 @@ namespace EventsManagementSystemOOP
             _TotalNumberOfEvents++;
         }
 
-        public bool RemoveAmountOfTickets(int noOfTickets)
+        public bool RemoveTickets(int noOfTickets)
         {
             bool result = Bookings.Count <= (NumberOfTicketsOverall - noOfTickets);
 
