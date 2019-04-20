@@ -8,8 +8,8 @@ namespace EventsManagementSystemOOP
 {
     public sealed class Booking
     {
-        public static int _PrevID { private get; set; } = 0;
-        public int Id { get; set; } = ++_PrevID;
+        public static int _PrevCode { get; set; } = 0;
+        public int Code { get; set; } = ++_PrevCode;
 
         public Event E { get; set; }
 

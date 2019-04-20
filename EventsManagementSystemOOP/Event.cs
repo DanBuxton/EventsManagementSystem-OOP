@@ -11,8 +11,8 @@ namespace EventsManagementSystemOOP
     {
         public static int _TotalNumberOfEvents { get; set; } = 0;
 
-        public static int _PrevID { get; set; } = 0;
-        public int Id { get; set; } = ++_PrevID;
+        public static int _PrevCode { get; set; } = 0;
+        public int Code { get; set; } = ++_PrevCode;
 
         public string Name { get; set; }
         public int NumberOfTicketsOverall { get; set; }
@@ -68,7 +68,7 @@ namespace EventsManagementSystemOOP
                 if (NumberOfTicketsOverall <= (NumberOfTicketsLeft - 1))
                 {
 
-                    Bookings.Add(b.Id, b);
+                    Bookings.Add(b.Code, b);
 
                     NumberOfTicketsLeft--;
 
@@ -91,7 +91,7 @@ namespace EventsManagementSystemOOP
         }
         public bool RemoveBooking(Booking b)
         {
-            return RemoveBooking(b.Id);
+            return RemoveBooking(b.Code);
         }
     }
 }

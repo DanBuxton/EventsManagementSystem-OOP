@@ -11,19 +11,19 @@ namespace EventsManagementSystemOOP
         public static int _PrevID { private get; set; } = 0;
         public int Id { get; set; } = ++_PrevID;
 
-        public string Details { get; set; }
+        public LogDetails Details { get; set; }
         public DateTime DateOfTransaction { get; set; } = DateTime.Now;
 
         public Log(LogDetails details)
         {
-            Details = details.ToString();
+            Details = details;
         }
 
         public sealed class LogDetails
         {
-            private readonly Event e = null;
-            private readonly Booking b = null;
-            private readonly TransType type;
+            public readonly Event e = null;
+            public readonly Booking b = null;
+            public readonly TransType type;
 
             public enum TransType
             {
@@ -35,10 +35,10 @@ namespace EventsManagementSystemOOP
             }
 
             /// <summary>
-            /// 
+            /// Details of the operation
             /// </summary>
             /// <param name="ob">An Event or Booking instance</param>
-            /// <param name="type"></param>
+            /// <param name="type">The type of operation performed</param>
             public LogDetails(object ob, TransType type)
             {
                 e = ob as Event;
