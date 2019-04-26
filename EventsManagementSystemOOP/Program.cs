@@ -39,6 +39,7 @@ namespace EventsManagementSystemOOP
                 {
                     case ADD_EVENT:
                         AddAnEvent();
+                        Console.WriteLine(Events[0]);
                         break;
                     case UPDATE_EVENT:
                         UpdateAnEvent();
@@ -73,16 +74,16 @@ namespace EventsManagementSystemOOP
         {
             int? result = null;
 
-            Console.WriteLine("Enter a number between {min} and {max}: ");
-
-            while (!result.HasValue || (result < min && result > max))
+            do
             {
                 try
                 {
+                    Console.Write($"Enter a number between {min} and {max}: ");
                     result = int.Parse(Console.ReadLine());
                 }
-                catch (Exception) { DisplayMessage("", isError: true); }
+                catch (Exception) { }
             }
+            while (result < min && result > max);
 
             return result.Value;
         }
@@ -96,7 +97,11 @@ namespace EventsManagementSystemOOP
 
         private static void AddAnEvent()
         {
-            string eventName = GetName("Event");
+            Event e = new Event(name: GetName("Event"), pricePerTicket: 5.99, numOfPlaces: GetNumber());
+
+            Events.Add(e);
+
+            TransactionLog.Add(new Log(new Log.LogDetails(ob: e, type: Log.LogDetails.TransType.Add)));
         }
 
         private static void UpdateAnEvent()
@@ -124,11 +129,11 @@ namespace EventsManagementSystemOOP
             {
                 mid = (min + max) / 2;
 
-                if (code == Events[mid].Code)
+                if (code == Events[mid].Id)
                 {
                     e = Events[mid];
                 }
-                else if (code < Events[mid].Code)
+                else if (code < Events[mid].Id)
                 {
                     max = mid - 1;
                 }
@@ -143,7 +148,7 @@ namespace EventsManagementSystemOOP
 
         private static void BookTickets()
         {
-
+            int id = GetNumber();
         }
 
         private static void CancelBooking()
@@ -153,7 +158,20 @@ namespace EventsManagementSystemOOP
 
         private static void DisplayAllEvents()
         {
+            Console.WriteLine("All Events");
 
+            for (int i = 0; i < Event._TotalNumberOfEvents; i++)
+            {
+                Event e = Events[i];
+
+                Console.WriteLine("\t");
+
+
+                for (int j = 0; j < e.Bookings.Count; j++)
+                {
+
+                }
+            }
         }
 
         private static void DisplayAllTransactions()

@@ -39,7 +39,7 @@ namespace EventsManagementSystemOOP
             /// </summary>
             /// <param name="ob">An Event or Booking instance</param>
             /// <param name="type">The type of operation performed</param>
-            public LogDetails(object ob, TransType type)
+            internal LogDetails(object ob, TransType type)
             {
                 e = ob as Event;
                 b = ob as Booking;

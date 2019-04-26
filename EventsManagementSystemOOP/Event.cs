@@ -11,8 +11,8 @@ namespace EventsManagementSystemOOP
     {
         public static int _TotalNumberOfEvents { get; set; } = 0;
 
-        public static int _PrevCode { get; set; } = 0;
-        public int Code { get; set; } = ++_PrevCode;
+        public static int _PrevId { get; set; } = 0;
+        public int Id { get; set; } = ++_PrevId;
 
         public string Name { get; set; }
         public int NumberOfTicketsOverall { get; set; }
@@ -44,19 +44,19 @@ namespace EventsManagementSystemOOP
             _TotalNumberOfEvents++;
         }
 
-        public bool RemoveTickets(int noOfTickets)
+        public void AddTickets(int amount)
         {
-            bool result = Bookings.Count <= (NumberOfTicketsOverall - noOfTickets);
-
-            if (result)
-                AddTickets(-noOfTickets);
-
-            return result;
+            NumberOfTicketsOverall += amount;
         }
 
-        public void AddTickets(int ticketsToAdd)
+        public bool RemoveTickets(int amount)
         {
-            NumberOfTicketsOverall += ticketsToAdd;
+            bool result = Bookings.Count <= (NumberOfTicketsOverall - amount);
+
+            if (result)
+                AddTickets(-amount);
+
+            return result;
         }
 
         public bool AddBooking(Booking b)
