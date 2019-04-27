@@ -70,7 +70,7 @@ namespace EventsManagementSystemOOP
             Environment.Exit(0);
         }
 
-        private static int GetNumber(int min = 1, int max = 9999)
+        private static int GetNumber()
         {
             int? result = null;
 
@@ -78,12 +78,15 @@ namespace EventsManagementSystemOOP
             {
                 try
                 {
-                    Console.Write($"Enter a number between {min} and {max}: ");
+                    Console.Write("Enter a number: ");
                     result = int.Parse(Console.ReadLine());
                 }
-                catch (Exception) { }
+                catch (Exception)
+                {
+                    DisplayMessage(msg: "Please enter a number", isError: true);
+                }
             }
-            while (result < min && result > max);
+            while (!result.HasValue);
 
             return result.Value;
         }
@@ -97,7 +100,11 @@ namespace EventsManagementSystemOOP
 
         private static void AddAnEvent()
         {
-            Event e = new Event(name: GetName("Event"), pricePerTicket: 5.99, numOfPlaces: GetNumber());
+            string name = GetName("Event");
+            double price = 5.99;
+            int places = GetNumber();
+
+            Event e = new Event(name: name, pricePerTicket: price, numOfPlaces: places);
 
             Events.Add(e);
 
@@ -178,56 +185,6 @@ namespace EventsManagementSystemOOP
         {
 
         }
-
-        /*
-        public static void DisplayAllEvents()
-        {
-            if (Events.Count > 0)
-            {
-                Console.WriteLine("Event(s):");
-
-                for (int i = 0; i < Events.Count; i++)
-                {
-                    Event e = Events[i];
-                    Booking[] bookings = e.Bookings.Values.ToArray();
-
-                    Console.WriteLine("\t" + e);
-
-                    Console.WriteLine();
-
-                    if ((bookings != null) && (bookings.Length > 0))
-                    {
-                        Console.WriteLine($"\t\tBookings: ({bookings.Length})");
-
-                        for (int b = 0; b < bookings.Length; b++)
-                        {
-                            Console.WriteLine();
-
-                            Console.Write("\t\t\tRef: " + bookings[b].Code + Environment.NewLine);
-                            Console.Write("\t\t\tCustomer name: " + bookings[b].CustomerName + Environment.NewLine);
-                            Console.Write("\t\t\tAddress: " + bookings[b].CustomerAddress + Environment.NewLine);
-                            Console.Write("\t\t\tNumber of tickets: " + bookings[b].NumberOfTicketsToBuy + Environment.NewLine);
-                            Console.Write("\t\t\tPrice: {0:c}" + Environment.NewLine, bookings[b].TotalPriceOfTickets);
-                            if (b < bookings.Length - 1)
-                            {
-                                Console.WriteLine("");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("\t\tNo bookings");
-                    }
-
-                    Console.WriteLine("");
-                }
-            }
-            else
-            {
-                Console.WriteLine("No events");
-            }
-        }
-        /**/
 
         /**/
         public static void DisplayTransactions()
