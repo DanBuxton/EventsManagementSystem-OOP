@@ -27,7 +27,6 @@ namespace EventsManagementSystemOOP
         {
             int num;
 
-
             do
             {
                 Console.Clear();
