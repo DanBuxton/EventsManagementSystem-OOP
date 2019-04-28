@@ -39,7 +39,6 @@ namespace EventsManagementSystemOOP
                 {
                     case ADD_EVENT:
                         AddAnEvent();
-                        Console.WriteLine(Events[0]);
                         break;
                     case UPDATE_EVENT:
                         UpdateAnEvent();
@@ -63,11 +62,31 @@ namespace EventsManagementSystemOOP
                         DisplayMessage("Are you sure you want to exit, changes will not be saved? (y/n) ", isWarning: true, hasNewLine: false);
                         char response = Console.ReadLine()[0];
                         if (response.ToString().ToLower() == "n") num = 0;
+                        else Environment.Exit(0);
                         break;
                 }
             } while (num != EXIT);
+        }
 
-            Environment.Exit(0);
+        private static int GetCode(string str)
+        {
+            int? result = null;
+
+            do
+            {
+                try
+                {
+                    DisplayMessage(msg: "Enter a number: ", hasNewLine: false);
+                    result = int.Parse(Console.ReadLine());
+                }
+                catch (Exception)
+                {
+                    DisplayMessage(msg: "Please enter a valid number", isError: true);
+                }
+            }
+            while (!result.HasValue);
+
+            return result.Value;
         }
 
         private static int GetNumber()
@@ -78,12 +97,12 @@ namespace EventsManagementSystemOOP
             {
                 try
                 {
-                    Console.Write("Enter a number: ");
+                    DisplayMessage(msg: "Enter a number: ", hasNewLine: false);
                     result = int.Parse(Console.ReadLine());
                 }
                 catch (Exception)
                 {
-                    DisplayMessage(msg: "Please enter a number", isError: true);
+                    DisplayMessage(msg: "Please enter a valid number", isError: true);
                 }
             }
             while (!result.HasValue);
@@ -91,7 +110,27 @@ namespace EventsManagementSystemOOP
             return result.Value;
         }
 
-        public static string GetName(string str)
+        private static double GetPrice()
+        {
+            double? result = null;
+
+            do
+            {
+                try
+                {
+                    DisplayMessage(msg: "Enter a price of 0 or more: ", hasNewLine: false);
+                    result = double.Parse(Console.ReadLine());
+                }
+                catch (Exception)
+                {
+                    DisplayMessage(msg: "Please enter a valid number", isError: true);
+                }
+            } while (!result.HasValue && (result.Value >= 0));
+
+            return result.Value;
+        }
+
+        private static string GetName(string str)
         {
             DisplayMessage($"{str} name: ", hasNewLine: false);
 
@@ -101,7 +140,7 @@ namespace EventsManagementSystemOOP
         private static void AddAnEvent()
         {
             string name = GetName("Event");
-            double price = 5.99;
+            double price = GetPrice();
             int places = GetNumber();
 
             Event e = new Event(name: name, pricePerTicket: price, numOfPlaces: places);
@@ -121,46 +160,73 @@ namespace EventsManagementSystemOOP
 
         }
 
-        private static Event GetEvent(int code)
-        {
-            //return Events.Where(e => e.Code == code).ToArray()[0];
-
-            /**/
-            Event e = null;
-
-            int min = 1;
-            int max = Events.Count - 1;
-            int mid = (min + max) / 2;
-
-            while (1 <= Events.Count && e == null)
-            {
-                mid = (min + max) / 2;
-
-                if (code == Events[mid].Id)
-                {
-                    e = Events[mid];
-                }
-                else if (code < Events[mid].Id)
-                {
-                    max = mid - 1;
-                }
-                else
-                {
-                    min = mid + 1;
-                }
-            }
-
-            return e;/**/
-        }
-
         private static void BookTickets()
         {
-            int id = GetNumber();
+            int? result = null;
+            int id = 0;
+
+            do
+            {
+                try
+                {
+                    Console.Write("Enter an event id: ");
+                    result = int.Parse(Console.ReadLine());
+                    id = result.Value;
+                }
+                catch (Exception)
+                {
+                    DisplayMessage(msg: "Please enter a valid event id", isError: true);
+                }
+            }
+            while (!result.HasValue);
+
+            Event e = GetEvent(id);
+
+            if (e != null)
+            {
+                GetName("Customer");
+                string cName = Console.ReadLine();
+
+                DisplayMessage(msg: "Customer Address: ", hasNewLine: false);
+                string cAddress = Console.ReadLine();
+
+                int tickets = GetNumber();
+            }
+            else
+            {
+                DisplayMessage(msg: "", isWarning: true);
+            }
         }
 
         private static void CancelBooking()
         {
+            int id = GetCode("Booking");
+            Event e = null;
 
+            foreach (Event ev in Events)
+            {
+                if (ev.Bookings.ContainsKey(id)) e = ev;
+            }
+
+            if (e != null)
+            {
+                e.Bookings.TryGetValue(id, out Booking b);
+
+                if (e.Bookings.Remove(id))
+                {
+                    e.NumberOfTicketsLeft += b.NumberOfTickets;
+
+                    DisplayMessage(msg: "Booking successfully removed");
+                }
+                else
+                {
+                    DisplayMessage(msg: "Booking wasn't successfully removed", isError: true);
+                }
+            }
+            else
+            {
+                DisplayMessage(msg: "", isError: true);
+            }
         }
 
         private static void DisplayAllEvents()
@@ -181,13 +247,7 @@ namespace EventsManagementSystemOOP
             }
         }
 
-        private static void DisplayAllTransactions()
-        {
-
-        }
-
-        /**/
-        public static void DisplayTransactions()
+        public static void DisplayAllTransactions()
         {
             if (TransactionLog.Count > 0)
             {
@@ -226,7 +286,62 @@ namespace EventsManagementSystemOOP
                 Console.WriteLine("No transactions currently");
             }
         }
-        /**/
+
+        private static Event GetEvent(int code)
+        {
+            Event e = null;
+
+            int min = 1;
+            int max = Events.Count - 1;
+            int mid = (min + max) / 2;
+
+            while (1 <= Events.Count && e == null)
+            {
+                mid = (min + max) / 2;
+
+                if (code == Events[mid].Id)
+                {
+                    e = Events[mid];
+                }
+                else if (code < Events[mid].Id)
+                {
+                    max = mid - 1;
+                }
+                else
+                {
+                    min = mid + 1;
+                }
+            }
+
+            return e;
+        }
+
+        private static void DisplayMessage(string msg, ConsoleColor colorAfter = ConsoleColor.Gray,
+            bool isError = false, bool isWarning = false, bool hasNewLine = true)
+        {
+            ConsoleColor color;
+            string message;
+
+            if (isError)
+            {
+                color = ConsoleColor.Red;
+                message = $"ERROR: {msg}";
+            }
+            else if (isWarning)
+            {
+                color = ConsoleColor.DarkYellow;
+                message = $"Warning! {msg}";
+            }
+            else
+            {
+                color = ConsoleColor.Gray;
+                message = msg;
+            }
+
+            Console.ForegroundColor = color;
+            Console.Write(message + (hasNewLine ? Environment.NewLine : null));
+            Console.ForegroundColor = colorAfter;
+        }
 
         private static void DisplayMenu()
         {
@@ -271,33 +386,6 @@ namespace EventsManagementSystemOOP
             }
 
             return res.Value;
-        }
-
-        private static void DisplayMessage(string msg, ConsoleColor colorAfter = ConsoleColor.Gray,
-            bool isError = false, bool isWarning = false, bool hasNewLine = true)
-        {
-            ConsoleColor color;
-            string message;
-
-            if (isError)
-            {
-                color = ConsoleColor.Red;
-                message = $"ERROR: {msg}";
-            }
-            else if (isWarning)
-            {
-                color = ConsoleColor.DarkYellow;
-                message = $"Warning! {msg}";
-            }
-            else
-            {
-                color = ConsoleColor.Gray;
-                message = msg;
-            }
-
-            Console.ForegroundColor = color;
-            Console.Write(message + (hasNewLine ? Environment.NewLine : null));
-            Console.ForegroundColor = colorAfter;
         }
     }
 }

@@ -19,6 +19,9 @@ namespace EventsManagementSystemOOP
             Details = details;
         }
 
+        /// <summary>
+        /// Details of the operation
+        /// </summary>
         public sealed class LogDetails
         {
             public readonly Event e = null;
@@ -39,7 +42,7 @@ namespace EventsManagementSystemOOP
             /// </summary>
             /// <param name="ob">An Event or Booking instance</param>
             /// <param name="type">The type of operation performed</param>
-            internal LogDetails(object ob, TransType type)
+            public LogDetails(object ob, TransType type)
             {
                 e = ob as Event;
                 b = ob as Booking;
