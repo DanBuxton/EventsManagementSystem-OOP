@@ -13,24 +13,26 @@ namespace EventsManagementSystemOOP
         public int Code { get; set; } = ++_PrevCode;
 
 
-        public Customer CustomerDetails { get; set; }
-        public int NumberOfTickets { get; set; }
+        public Customer CustomerDetails { get; private set; }
+        public int NumberOfTickets { get; private set; }
         public double Price { get => NumberOfTickets * Event.PricePerTicket; }
 
         public Event Event { get; set; }
 
-        public Booking(Event e, Customer c, int numberOfTicketsToBuy)
-        {
-            _TotalNumberOfBookings++;
-            Event = e;
-            CustomerDetails = c;
-            NumberOfTickets = numberOfTicketsToBuy;
-        }
+        /// <summary>
+        /// Must use Event.AddBooking()
+        /// </summary>
+        /// <param name="c">Customer details</param>
+        /// <param name="numberOfTicketsToBuy">The amount of tickets to bbuy</param>
         public Booking(Customer c, int numberOfTicketsToBuy)
         {
             _TotalNumberOfBookings++;
             CustomerDetails = c;
             NumberOfTickets = numberOfTicketsToBuy;
+        }
+
+        ~Booking() {
+            _TotalNumberOfBookings--;
         }
 
         public class Customer
