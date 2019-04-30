@@ -29,6 +29,7 @@ namespace EventsManagementSystemOOP
         }
 
         public DateTime DateAdded { get; set; } = DateTime.Now;
+        public DateTime DateUpdated { get; set; }
 
         public Dictionary<int, Booking> Bookings { get; set; } = new Dictionary<int, Booking>();
 

@@ -151,7 +151,24 @@ namespace EventsManagementSystemOOP
 
         private static void UpdateAnEvent()
         {
+            Event e = GetEvent(GetCode("Event"));
 
+            if (e != null)
+            {
+                string name = GetName("Event");
+                double price = GetPrice();
+                int places = GetNumber();
+
+                e.Name = name;
+                e.PricePerTicket = price;
+                e.NumberOfTicketsOverall = places;
+                e.NumberOfTicketsLeft += places;
+                e.DateUpdated = DateTime.Now;
+            }
+            else
+            {
+                DisplayMessage(msg: "Event doesn't exist with that event code", isError: true);
+            }
         }
 
         private static void DeleteAnEvent()
