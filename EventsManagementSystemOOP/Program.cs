@@ -164,6 +164,8 @@ namespace EventsManagementSystemOOP
                 e.NumberOfTicketsOverall = places;
                 e.NumberOfTicketsLeft += places;
                 e.DateUpdated = DateTime.Now;
+
+                TransactionLog.Add(new Log(new Log.LogDetails(ob: e, type: Log.LogDetails.TransType.Update)));
             }
             else
             {
@@ -173,7 +175,18 @@ namespace EventsManagementSystemOOP
 
         private static void DeleteAnEvent()
         {
+            Event e = GetEvent(GetCode("Event"));
 
+            if (e != null)
+            {
+                Events.Remove(e);
+
+                TransactionLog.Add(new Log(new Log.LogDetails(ob: e, type: Log.LogDetails.TransType.Delete)));
+            }
+            else
+            {
+                DisplayMessage(msg: "Event doesn't exist with that event code", isError: true);
+            }
         }
 
         private static void BookTickets()
