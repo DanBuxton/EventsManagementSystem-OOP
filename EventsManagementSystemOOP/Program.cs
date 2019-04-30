@@ -245,7 +245,7 @@ namespace EventsManagementSystemOOP
             {
                 e.Bookings.TryGetValue(id, out Booking b);
 
-                if (e.Bookings.Remove(id))
+                if (e.RemoveBooking(id))
                 {
                     e.NumberOfTicketsLeft += b.NumberOfTickets;
 
@@ -258,7 +258,7 @@ namespace EventsManagementSystemOOP
             }
             else
             {
-                DisplayMessage(msg: "", isError: true);
+                DisplayMessage(msg: "No event was found to have a booking with that code", isError: true);
             }
         }
 
