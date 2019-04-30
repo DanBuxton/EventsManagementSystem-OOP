@@ -11,9 +11,11 @@ namespace EventsManagementSystemOOP
         public static int _TotalNumberOfBookings = 0;
         public static int _PrevCode { get; set; } = 0;
         public int Code { get; set; } = ++_PrevCode;
-        
+
+
         public Customer CustomerDetails { get; set; }
         public int NumberOfTickets { get; set; }
+        public double Price { get => NumberOfTickets * Event.PricePerTicket; }
 
         public Event Event { get; set; }
 
@@ -21,6 +23,12 @@ namespace EventsManagementSystemOOP
         {
             _TotalNumberOfBookings++;
             Event = e;
+            CustomerDetails = c;
+            NumberOfTickets = numberOfTicketsToBuy;
+        }
+        public Booking(Customer c, int numberOfTicketsToBuy)
+        {
+            _TotalNumberOfBookings++;
             CustomerDetails = c;
             NumberOfTickets = numberOfTicketsToBuy;
         }

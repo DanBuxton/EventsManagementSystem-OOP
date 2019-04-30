@@ -69,9 +69,9 @@ namespace EventsManagementSystemOOP
                 if (NumberOfTicketsOverall <= (NumberOfTicketsLeft - 1))
                 {
 
-                    Bookings.Add(b.Code, b);
+                    b.Event = this;
 
-                    NumberOfTicketsLeft--;
+                    Bookings.Add(b.Code, b);
 
                     result = true;
                 }

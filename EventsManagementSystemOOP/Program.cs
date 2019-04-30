@@ -75,7 +75,7 @@ namespace EventsManagementSystemOOP
             {
                 try
                 {
-                    DisplayMessage(msg: "Enter a number: ", hasNewLine: false);
+                    DisplayMessage(msg: str + " code", hasNewLine: false);
                     result = int.Parse(Console.ReadLine());
                 }
                 catch (Exception)
@@ -191,25 +191,7 @@ namespace EventsManagementSystemOOP
 
         private static void BookTickets()
         {
-            int? result = null;
-            int id = 0;
-
-            do
-            {
-                try
-                {
-                    Console.Write("Enter an event id: ");
-                    result = int.Parse(Console.ReadLine());
-                    id = result.Value;
-                }
-                catch (Exception)
-                {
-                    DisplayMessage(msg: "Please enter a valid event id", isError: true);
-                }
-            }
-            while (!result.HasValue);
-
-            Event e = GetEvent(id);
+            Event e = GetEvent(GetCode("Event"));
 
             if (e != null)
             {
@@ -220,10 +202,32 @@ namespace EventsManagementSystemOOP
                 string cAddress = Console.ReadLine();
 
                 int tickets = GetNumber();
+
+                if (e.NumberOfTicketsLeft - tickets >= 0)
+                {
+                    Booking b = new Booking(new Booking.Customer(cName, cAddress), tickets);
+
+                    if (e.AddBooking(b))
+                    {
+                        e.NumberOfTicketsLeft -= tickets;
+
+                        DisplayMessage(msg: $"Booking code: {b.Code}\nPrice: {b.Price}");
+
+                        TransactionLog.Add(new Log(new Log.LogDetails(ob: b, type: Log.LogDetails.TransType.Book)));
+                    }
+                    else
+                    {
+                        DisplayMessage(msg: "The event wan't successfuly processed", isError: true);
+                    }
+                }
+                else
+                {
+                    DisplayMessage(msg: "The event doesn't have enough tickets available", isError: true);
+                }
             }
             else
             {
-                DisplayMessage(msg: "", isWarning: true);
+                DisplayMessage(msg: "Event doesn't exist with that event code", isError: true);
             }
         }
 
