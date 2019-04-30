@@ -44,6 +44,10 @@ namespace EventsManagementSystemOOP
 
             _TotalNumberOfEvents++;
         }
+        ~Event()
+        {
+            _TotalNumberOfEvents--;
+        }
 
         public void AddTickets(int amount)
         {
@@ -68,7 +72,6 @@ namespace EventsManagementSystemOOP
             {
                 if (NumberOfTicketsOverall <= (NumberOfTicketsLeft - 1))
                 {
-
                     b.Event = this;
 
                     Bookings.Add(b.Code, b);
@@ -81,17 +84,24 @@ namespace EventsManagementSystemOOP
             return result;
         }
 
-        public bool RemoveBooking(int id)
+        private bool RemoveBooking(int id)
         {
-            bool result = Bookings.Remove(id);
+            bool result = false;
 
-            if (result)
-                NumberOfTicketsLeft++;
+            try
+            {
+                if (Bookings.ContainsKey(id))
+                {
+                    result = Bookings.Remove(id);
+                }
+            }
+            catch (ArgumentNullException) { }
 
             return result;
         }
         public bool RemoveBooking(Booking b)
         {
+            NumberOfTicketsLeft += b.NumberOfTickets;
             return RemoveBooking(b.Code);
         }
     }

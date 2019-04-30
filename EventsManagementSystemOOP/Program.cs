@@ -245,11 +245,9 @@ namespace EventsManagementSystemOOP
             {
                 e.Bookings.TryGetValue(id, out Booking b);
 
-                if (e.RemoveBooking(id))
+                if (e.RemoveBooking(b))
                 {
-                    e.NumberOfTicketsLeft += b.NumberOfTickets;
-
-                    DisplayMessage(msg: "Booking successfully removed");
+                    TransactionLog.Add(new Log(new Log.LogDetails(ob: b, type: Log.LogDetails.TransType.Cancel)));
                 }
                 else
                 {
