@@ -9,6 +9,8 @@ namespace EventsManagementSystemOOP
 {
     public sealed class Event
     {
+        public static Dictionary<int, Event> Events { get; private set; } = new Dictionary<int, Event>();
+
         public static int _TotalNumberOfEvents { get; set; } = 0;
 
         public static int _PrevId { get; set; } = 0;
@@ -42,11 +44,47 @@ namespace EventsManagementSystemOOP
             NumberOfTicketsLeft = numOfPlaces;
             NumberOfTicketsOverall = numOfPlaces;
 
+            Events.Add(Id, this);
+
             _TotalNumberOfEvents++;
         }
         ~Event()
         {
             _TotalNumberOfEvents--;
+        }
+
+        public static Event GetEvent(int code)
+        {
+            Event e = null;
+
+            int min = 1;
+            int max = Events.Count - 1;
+            int mid = (min + max) / 2;
+
+            while (1 <= Events.Count && e == null)
+            {
+                mid = (min + max) / 2;
+
+                if (code == Events[mid].Id)
+                {
+                    e = Events[mid];
+                }
+                else if (code < Events[mid].Id)
+                {
+                    max = mid - 1;
+                }
+                else
+                {
+                    min = mid + 1;
+                }
+            }
+
+            return e;
+        }
+
+        public static bool DeleteEvent(int id)
+        {
+            return Events.Remove(id);
         }
 
         public void AddTickets(int amount)
@@ -74,7 +112,7 @@ namespace EventsManagementSystemOOP
                 {
                     b.Event = this;
 
-                    Bookings.Add(b.Code, b);
+                    Bookings.Add(b.Id, b);
 
                     result = true;
                 }
@@ -102,7 +140,7 @@ namespace EventsManagementSystemOOP
         public bool RemoveBooking(Booking b)
         {
             NumberOfTicketsLeft += b.NumberOfTickets;
-            return RemoveBooking(b.Code);
+            return RemoveBooking(b.Id);
         }
     }
 }

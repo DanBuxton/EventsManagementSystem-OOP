@@ -8,6 +8,8 @@ namespace EventsManagementSystemOOP
 {
     public sealed class Log
     {
+        public static List<Log> TransactionLog { get; set; } = new List<Log>();
+
         public static int _PrevID { private get; set; } = 0;
         public int Id { get; set; } = ++_PrevID;
 
@@ -17,6 +19,8 @@ namespace EventsManagementSystemOOP
         public Log(LogDetails details)
         {
             Details = details;
+
+            TransactionLog.Add(this);
         }
 
         /// <summary>
@@ -24,7 +28,7 @@ namespace EventsManagementSystemOOP
         /// </summary>
         public sealed class LogDetails
         {
-            public readonly Event e = null;
+            public readonly Event ev = null;
             public readonly Booking b = null;
             public readonly TransType type;
 
@@ -44,7 +48,7 @@ namespace EventsManagementSystemOOP
             /// <param name="type">The type of operation performed</param>
             public LogDetails(object ob, TransType type)
             {
-                e = ob as Event;
+                ev = ob as Event;
                 b = ob as Booking;
 
                 this.type = type;

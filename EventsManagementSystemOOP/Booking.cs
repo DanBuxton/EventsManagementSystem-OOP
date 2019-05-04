@@ -9,8 +9,8 @@ namespace EventsManagementSystemOOP
     public sealed class Booking
     {
         public static int _TotalNumberOfBookings = 0;
-        public static int _PrevCode { get; set; } = 0;
-        public int Code { get; set; } = ++_PrevCode;
+        public static int _PrevId { get; set; } = 0;
+        public int Id { get; set; } = ++_PrevId;
 
 
         public Customer CustomerDetails { get; private set; }

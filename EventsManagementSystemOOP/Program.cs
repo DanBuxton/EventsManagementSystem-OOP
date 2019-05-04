@@ -8,9 +8,6 @@ namespace EventsManagementSystemOOP
 {
     class Program
     {
-        public static List<Event> Events { get; set; } = new List<Event>();
-        public static List<Log> TransactionLog { get; set; } = new List<Log>();
-
         private const int ADD_EVENT = 1;
         private const int UPDATE_EVENT = 2;
         private const int DELETE_EVENT = 3;
@@ -25,46 +22,36 @@ namespace EventsManagementSystemOOP
 
         static void Main(string[] args)
         {
-            int num;
+            const char YES = 'y';
+            const char NO = 'n';
+            char choice = 'y';
 
-            do
+            while (choice == YES)
             {
+                Menu();
+
                 Console.Clear();
 
-                Console.ForegroundColor = ConsoleColor.Gray;
-                num = MenuResponse();
+                char response = ' ';
 
-                switch (num)
+                while (response != 'n' && response != 'y')
                 {
-                    case ADD_EVENT:
-                        AddAnEvent();
-                        break;
-                    case UPDATE_EVENT:
-                        UpdateAnEvent();
-                        break;
-                    case DELETE_EVENT:
-                        DeleteAnEvent();
-                        break;
-                    case BOOK_TICKETS:
-                        BookTickets();
-                        break;
-                    case CANCEL_BOOKING:
-                        CancelBooking();
-                        break;
-                    case DISPLAY_EVENTS:
-                        DisplayAllEvents();
-                        break;
-                    case DISPLAY_TRANSACTIONS:
-                        DisplayAllTransactions();
-                        break;
-                    case EXIT:
-                        DisplayMessage("Are you sure you want to exit, changes will not be saved? (y/n) ", isWarning: true, hasNewLine: false);
-                        char response = Console.ReadLine()[0];
-                        if (response.ToString().ToLower() == "n") num = 0;
-                        else Environment.Exit(0);
-                        break;
+                    DisplayMessage("Are you sure you want to exit, changes will not be saved? (y/n) ", isWarning: true, hasNewLine: false);
+
+                    try
+                    {
+                        response = char.Parse(Console.ReadLine().ToLower());
+                        if (response == YES) choice = NO;
+                        else if (response == NO) Menu();
+                    }
+                    catch (Exception)
+                    {
+                        DisplayMessage("Please enter 'y' or 'n'", isError: true, hasNewLine: true);
+                    }
                 }
-            } while (num != EXIT);
+            }
+
+            Environment.Exit(0);
         }
 
         private static int GetCode(string str)
@@ -75,7 +62,7 @@ namespace EventsManagementSystemOOP
             {
                 try
                 {
-                    DisplayMessage(msg: str + " code", hasNewLine: false);
+                    DisplayMessage(msg: str + " code: ", hasNewLine: false);
                     result = int.Parse(Console.ReadLine());
                 }
                 catch (Exception)
@@ -144,14 +131,14 @@ namespace EventsManagementSystemOOP
 
             Event e = new Event(name: name, pricePerTicket: price, numOfPlaces: places);
 
-            Events.Add(e);
+            //Events.Add(e);
 
-            TransactionLog.Add(new Log(new Log.LogDetails(ob: e, type: Log.LogDetails.TransType.Add)));
+            Log.TransactionLog.Add(new Log(new Log.LogDetails(ob: e, type: Log.LogDetails.TransType.Add)));
         }
 
         private static void UpdateAnEvent()
         {
-            Event e = GetEvent(GetCode("Event"));
+            Event e = Event.GetEvent(GetCode("Event"));
 
             if (e != null)
             {
@@ -165,7 +152,7 @@ namespace EventsManagementSystemOOP
                 e.NumberOfTicketsLeft += places;
                 e.DateUpdated = DateTime.Now;
 
-                TransactionLog.Add(new Log(new Log.LogDetails(ob: e, type: Log.LogDetails.TransType.Update)));
+                Log.TransactionLog.Add(new Log(new Log.LogDetails(ob: e, type: Log.LogDetails.TransType.Update)));
             }
             else
             {
@@ -175,23 +162,28 @@ namespace EventsManagementSystemOOP
 
         private static void DeleteAnEvent()
         {
-            Event e = GetEvent(GetCode("Event"));
+            bool dataOK = false;
 
-            if (e != null)
+            while (!dataOK)
             {
-                Events.Remove(e);
+                int code = GetCode("Event");
 
-                TransactionLog.Add(new Log(new Log.LogDetails(ob: e, type: Log.LogDetails.TransType.Delete)));
-            }
-            else
-            {
-                DisplayMessage(msg: "Event doesn't exist with that event code", isError: true);
+                Event e = Event.GetEvent(code: code);
+
+                if (Event.DeleteEvent(code))
+                {
+                    Log.TransactionLog.Add(new Log(new Log.LogDetails(ob: e, type: Log.LogDetails.TransType.Delete)));
+                }
+                else
+                {
+                    DisplayMessage(msg: "Event doesn't exist with that event code", isError: true);
+                }
             }
         }
 
         private static void BookTickets()
         {
-            Event e = GetEvent(GetCode("Event"));
+            Event e = Event.GetEvent(GetCode("Event"));
 
             if (e != null)
             {
@@ -211,13 +203,13 @@ namespace EventsManagementSystemOOP
                     {
                         e.NumberOfTicketsLeft -= tickets;
 
-                        DisplayMessage(msg: $"Booking code: {b.Code}\nPrice: {b.Price}");
+                        DisplayMessage(msg: $"Booking code: {b.Id}\nPrice: {b.Price}");
 
-                        TransactionLog.Add(new Log(new Log.LogDetails(ob: b, type: Log.LogDetails.TransType.Book)));
+                        Log.TransactionLog.Add(new Log(new Log.LogDetails(ob: b, type: Log.LogDetails.TransType.Book)));
                     }
                     else
                     {
-                        DisplayMessage(msg: "The event wan't successfuly processed", isError: true);
+                        DisplayMessage(msg: "The event wasn't successfully processed", isError: true);
                     }
                 }
                 else
@@ -236,7 +228,7 @@ namespace EventsManagementSystemOOP
             int id = GetCode("Booking");
             Event e = null;
 
-            foreach (Event ev in Events)
+            foreach (Event ev in Event.Events.Values)
             {
                 if (ev.Bookings.ContainsKey(id)) e = ev;
             }
@@ -247,7 +239,7 @@ namespace EventsManagementSystemOOP
 
                 if (e.RemoveBooking(b))
                 {
-                    TransactionLog.Add(new Log(new Log.LogDetails(ob: b, type: Log.LogDetails.TransType.Cancel)));
+                    Log.TransactionLog.Add(new Log(new Log.LogDetails(ob: b, type: Log.LogDetails.TransType.Cancel)));
                 }
                 else
                 {
@@ -266,7 +258,7 @@ namespace EventsManagementSystemOOP
 
             for (int i = 0; i < Event._TotalNumberOfEvents; i++)
             {
-                Event e = Events[i];
+                Event e = Event.Events[i];
 
                 Console.WriteLine("\t");
 
@@ -280,33 +272,49 @@ namespace EventsManagementSystemOOP
 
         public static void DisplayAllTransactions()
         {
-            if (TransactionLog.Count > 0)
-            {
-                Console.WriteLine("Transactions ({0:d})", TransactionLog.Count);
+            List<Log> trans = new List<Log>(Log.TransactionLog);
 
-                for (int i = 0; i < TransactionLog.Count; i++)
+            if (trans.Count > 0)
+            {
+                Console.WriteLine("Transactions ({0:d})", trans.Count);
+
+                for (int i = 0; i < trans.Count; i++)
                 {
-                    Log t = TransactionLog[i];
+                    Log t = trans[i];
 
                     Console.WriteLine($"\tDate:\t{t.DateOfTransaction}");
                     Console.WriteLine($"\tType:\t{t.Details.type}");
 
+                    Log.LogDetails d = t.Details;
+
                     switch (t.Details.type)
                     {
                         case Log.LogDetails.TransType.Add:
-                            Console.WriteLine("\t" + t.Details + ";");
+                            Console.WriteLine($"\t\tCode:       " + d.ev.Id);
+                            Console.WriteLine($"\t\tName:       " + d.ev.Name);
+                            Console.WriteLine($"\t\tTickets:    {d.ev.NumberOfTicketsLeft} / {d.ev.NumberOfTicketsOverall}");
+                            Console.WriteLine($"\t\tPrice:      " + d.ev.PricePerTicket);
+                            Console.WriteLine($"\t\tDate added: " + d.ev.DateAdded.ToString("dd/mm/yyyy"));
                             break;
                         case Log.LogDetails.TransType.Update:
-                            Console.WriteLine("\t" + t.Details + ";");
+                            Console.WriteLine($"\t\tCode:         " + d.ev.Id);
+                            Console.WriteLine($"\t\tName:         " + d.ev.Name);
+                            Console.WriteLine($"\t\tTickets:      {d.ev.NumberOfTicketsLeft} / {d.ev.NumberOfTicketsOverall}");
+                            Console.WriteLine($"\t\tPrice:        " + d.ev.PricePerTicket);
+                            Console.WriteLine($"\t\tDate added:   " + d.ev.DateAdded.ToString("dd/mm/yyyy"));
+                            Console.WriteLine($"\t\tDate updated: " + d.ev.DateUpdated.ToString("dd/mm/yyyy"));
                             break;
                         case Log.LogDetails.TransType.Delete:
-                            Console.WriteLine("\t" + t.Details + ";");
+                            Console.WriteLine("\t\tCode: " + d.ev.Id + ";");
                             break;
                         case Log.LogDetails.TransType.Book:
-                            Console.WriteLine("\t" + t.Details + ";");
+                            Console.WriteLine("\t\tEvent Code: " + d.b.Event.Id + ";");
+                            Console.WriteLine("\t\tBooking Code: " + d.b.Id + ";");
+                            Console.WriteLine("\t\tNum tickets: " + d.b.NumberOfTickets + ";");
                             break;
                         case Log.LogDetails.TransType.Cancel:
-                            Console.WriteLine("\t\t" + t.Details + ";");
+                            Console.WriteLine("\t\tBooking Code: " + d.b.Id + ";");
+                            Console.WriteLine("\t\tNum tickets:  " + d.b.NumberOfTickets + ";");
                             break;
                     }
                     Console.WriteLine();
@@ -316,35 +324,6 @@ namespace EventsManagementSystemOOP
             {
                 Console.WriteLine("No transactions currently");
             }
-        }
-
-        private static Event GetEvent(int code)
-        {
-            Event e = null;
-
-            int min = 1;
-            int max = Events.Count - 1;
-            int mid = (min + max) / 2;
-
-            while (1 <= Events.Count && e == null)
-            {
-                mid = (min + max) / 2;
-
-                if (code == Events[mid].Id)
-                {
-                    e = Events[mid];
-                }
-                else if (code < Events[mid].Id)
-                {
-                    max = mid - 1;
-                }
-                else
-                {
-                    min = mid + 1;
-                }
-            }
-
-            return e;
         }
 
         private static void DisplayMessage(string msg, ConsoleColor colorAfter = ConsoleColor.Gray,
@@ -372,6 +351,50 @@ namespace EventsManagementSystemOOP
             Console.ForegroundColor = color;
             Console.Write(message + (hasNewLine ? Environment.NewLine : null));
             Console.ForegroundColor = colorAfter;
+        }
+
+        private static void Menu()
+        {
+            int num;
+
+            do
+            {
+                Console.Clear();
+
+                Console.ForegroundColor = ConsoleColor.Gray;
+                num = MenuResponse();
+
+                switch (num)
+                {
+                    case ADD_EVENT:
+                        AddAnEvent();
+                        break;
+                    case UPDATE_EVENT:
+                        UpdateAnEvent();
+                        break;
+                    case DELETE_EVENT:
+                        DeleteAnEvent();
+                        break;
+                    case BOOK_TICKETS:
+                        BookTickets();
+                        break;
+                    case CANCEL_BOOKING:
+                        CancelBooking();
+                        break;
+                    case DISPLAY_EVENTS:
+                        DisplayAllEvents();
+                        break;
+                    case DISPLAY_TRANSACTIONS:
+                        DisplayAllTransactions();
+                        break;
+                }
+
+                if (num != EXIT)
+                {
+                    Console.WriteLine("Press any key to continue");
+                    Console.ReadKey();
+                }
+            } while (num != EXIT);
         }
 
         private static void DisplayMenu()
