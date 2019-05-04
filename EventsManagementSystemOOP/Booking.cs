@@ -17,7 +17,7 @@ namespace EventsManagementSystemOOP
         public int NumberOfTickets { get; private set; }
         public double Price { get => NumberOfTickets * Event.PricePerTicket; }
 
-        public Event Event { get; set; }
+        public Event Event { get; internal set; }
 
         /// <summary>
         /// Must use Event.AddBooking()
@@ -29,10 +29,6 @@ namespace EventsManagementSystemOOP
             _TotalNumberOfBookings++;
             CustomerDetails = c;
             NumberOfTickets = numberOfTicketsToBuy;
-        }
-
-        ~Booking() {
-            _TotalNumberOfBookings--;
         }
 
         public class Customer

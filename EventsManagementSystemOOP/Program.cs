@@ -20,7 +20,7 @@ namespace EventsManagementSystemOOP
 
         private const int EXIT = 8;
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             const char YES = 'y';
             const char NO = 'n';
@@ -75,7 +75,7 @@ namespace EventsManagementSystemOOP
             return result.Value;
         }
 
-        private static int GetNumber()
+        private static int GetNumber(string str, int min = 0)
         {
             int? result = null;
 
@@ -83,8 +83,11 @@ namespace EventsManagementSystemOOP
             {
                 try
                 {
-                    DisplayMessage(msg: "Enter a number: ", hasNewLine: false);
-                    result = int.Parse(Console.ReadLine());
+                    do
+                    {
+                        DisplayMessage(msg: str, hasNewLine: false);
+                        result = int.Parse(Console.ReadLine());
+                    } while (result.Value <= min);
                 }
                 catch (Exception)
                 {
@@ -104,7 +107,7 @@ namespace EventsManagementSystemOOP
             {
                 try
                 {
-                    DisplayMessage(msg: "Enter a price of 0 or more: ", hasNewLine: false);
+                    DisplayMessage(msg: "Enter a price of 0 or more: £", hasNewLine: false);
                     result = double.Parse(Console.ReadLine());
                 }
                 catch (Exception)
@@ -127,7 +130,7 @@ namespace EventsManagementSystemOOP
         {
             string name = GetName("Event");
             double price = GetPrice();
-            int places = GetNumber();
+            int places = GetNumber(str: "Number of tickets: ");
 
             Event e = new Event(name: name, pricePerTicket: price, numOfPlaces: places);
 
@@ -143,8 +146,8 @@ namespace EventsManagementSystemOOP
             if (e != null)
             {
                 string name = GetName("Event");
+                int places = GetNumber(str: "Number of tickets: ", min: 1);
                 double price = GetPrice();
-                int places = GetNumber();
 
                 e.Name = name;
                 e.PricePerTicket = price;
@@ -156,7 +159,7 @@ namespace EventsManagementSystemOOP
             }
             else
             {
-                DisplayMessage(msg: "Event doesn't exist with that event code", isError: true);
+                DisplayMessage(msg: "An event doesn't exist with that event code", isError: true);
             }
         }
 
@@ -193,7 +196,7 @@ namespace EventsManagementSystemOOP
                 DisplayMessage(msg: "Customer Address: ", hasNewLine: false);
                 string cAddress = Console.ReadLine();
 
-                int tickets = GetNumber();
+                int tickets = GetNumber(str: "Number of tickets: ", min: 1);
 
                 if (e.NumberOfTicketsLeft - tickets >= 0)
                 {
@@ -270,7 +273,7 @@ namespace EventsManagementSystemOOP
             }
         }
 
-        public static void DisplayAllTransactions()
+        private static void DisplayAllTransactions()
         {
             List<Log> trans = new List<Log>(Log.TransactionLog);
 

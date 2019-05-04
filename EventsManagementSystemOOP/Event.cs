@@ -48,10 +48,6 @@ namespace EventsManagementSystemOOP
 
             _TotalNumberOfEvents++;
         }
-        ~Event()
-        {
-            _TotalNumberOfEvents--;
-        }
 
         public static Event GetEvent(int code)
         {
