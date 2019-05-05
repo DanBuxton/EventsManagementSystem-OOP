@@ -42,7 +42,6 @@ namespace EventsManagementSystemOOP
                     {
                         response = char.Parse(Console.ReadLine().ToLower());
                         if (response == YES) choice = NO;
-                        else if (response == NO) Menu();
                     }
                     catch (Exception)
                     {

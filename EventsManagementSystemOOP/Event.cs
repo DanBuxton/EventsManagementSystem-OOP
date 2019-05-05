@@ -53,6 +53,30 @@ namespace EventsManagementSystemOOP
         {
             Event e = null;
 
+            /*
+            int min = 1;
+            int max = Events.Count - 1;
+            int mid = (min + max) / 2;
+
+            while (1 <= Events.Count && e == null)
+            {
+                mid = (min + max) / 2;
+
+                if (code == Events[mid].Id)
+                {
+                    e = Events[mid];
+                }
+                else if (code < Events[mid].Id)
+                {
+                    max = mid - 1;
+                }
+                else
+                {
+                    min = mid + 1;
+                }
+            }
+            /**/
+
             if (Events.ContainsKey(code))
             {
                 e = Events[code];
