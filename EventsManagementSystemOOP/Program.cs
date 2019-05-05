@@ -79,6 +79,8 @@ namespace EventsManagementSystemOOP
         {
             int? result = null;
 
+            bool dataOK = false;
+
             do
             {
                 try
@@ -88,42 +90,65 @@ namespace EventsManagementSystemOOP
                         DisplayMessage(msg: str, hasNewLine: false);
                         result = int.Parse(Console.ReadLine());
                     } while (result.Value <= min);
+
+                    dataOK = true;
                 }
                 catch (Exception)
                 {
-                    DisplayMessage(msg: "Please enter a valid number", isError: true);
+                    DisplayMessage(msg: "Please enter a valid number (" + min + "+)", isError: true);
                 }
             }
-            while (!result.HasValue);
+            while (!dataOK);
 
             return result.Value;
         }
 
         private static double GetPrice()
         {
-            double? result = null;
+            double result = -.1;
+            bool dataOK = false;
 
             do
             {
                 try
                 {
-                    DisplayMessage(msg: "Enter a price of 0 or more: £", hasNewLine: false);
+                    DisplayMessage(msg: "Enter a price: £", hasNewLine: false);
                     result = double.Parse(Console.ReadLine());
+
+                    if (result < 0)
+                    {
+                        DisplayMessage(msg: "Please enter a valid positive number", isError: true);
+                    }
+                    else
+                    { dataOK = true; }
                 }
                 catch (Exception)
                 {
                     DisplayMessage(msg: "Please enter a valid number", isError: true);
                 }
-            } while (!result.HasValue && (result.Value >= 0));
+            } while (!dataOK);
 
-            return result.Value;
+            return result;
         }
 
         private static string GetName(string str)
         {
-            DisplayMessage($"{str} name: ", hasNewLine: false);
+            string result = "";
+            bool dataOK = false;
 
-            return Console.ReadLine();
+            while (!dataOK)
+            {
+                DisplayMessage($"{str} name: ", hasNewLine: false);
+                result = Console.ReadLine();
+
+                if (result.Length < 5 || result.Length > 50)
+                {
+                    DisplayMessage($"Name must be between 5 and 50 characters long", isError: true);
+                }
+                else { dataOK = true; }
+            }
+
+            return result;
         }
 
         private static void AddAnEvent()
@@ -136,7 +161,7 @@ namespace EventsManagementSystemOOP
 
             //Events.Add(e);
 
-            Log.TransactionLog.Add(new Log(new Log.LogDetails(ob: e, type: Log.LogDetails.TransType.Add)));
+            Log log = new Log(new Log.LogDetails(ob: e, type: Log.LogDetails.TransType.Add));
         }
 
         private static void UpdateAnEvent()
@@ -190,8 +215,7 @@ namespace EventsManagementSystemOOP
 
             if (e != null)
             {
-                GetName("Customer");
-                string cName = Console.ReadLine();
+                string cName = GetName("Customer");
 
                 DisplayMessage(msg: "Customer Address: ", hasNewLine: false);
                 string cAddress = Console.ReadLine();
@@ -204,11 +228,12 @@ namespace EventsManagementSystemOOP
 
                     if (e.AddBooking(b))
                     {
+                        DisplayMessage(msg: $"Booking code: {b.Id}\nPrice: {0:c}");
+                        DisplayMessage(msg: $"Booking code: {b.Id}\nPrice: {b.Price:c}");
+
                         e.NumberOfTicketsLeft -= tickets;
 
-                        DisplayMessage(msg: $"Booking code: {b.Id}\nPrice: {b.Price}");
-
-                        Log.TransactionLog.Add(new Log(new Log.LogDetails(ob: b, type: Log.LogDetails.TransType.Book)));
+                        Log l = new Log(new Log.LogDetails(ob: b, type: Log.LogDetails.TransType.Book));
                     }
                     else
                     {
@@ -257,24 +282,50 @@ namespace EventsManagementSystemOOP
 
         private static void DisplayAllEvents()
         {
-            Console.WriteLine("All Events");
+            Console.Clear();
 
-            for (int i = 0; i < Event._TotalNumberOfEvents; i++)
-            {
-                Event e = Event.Events[i];
+            Console.WriteLine("Events");
 
-                Console.WriteLine("\t");
-
-
-                for (int j = 0; j < e.Bookings.Count; j++)
+            if (Event._TotalNumberOfEvents > 0)
+                for (int i = 0; i < Event._TotalNumberOfEvents; i++)
                 {
+                    Event e = Event.Events.Values.ToArray()[i];
 
+                    Console.WriteLine("\tId:    " + e.Id);
+                    Console.WriteLine("\tName:  " + e.Name);
+                    Console.WriteLine($"\tId:    {e.NumberOfTicketsLeft}/{e.NumberOfTicketsOverall}");
+                    Console.WriteLine("\tPrice: {0:c}", e.PricePerTicket);
+                    Console.WriteLine("\tAdded: " + e.DateAdded.ToString("dd/mm/yyyy (HH:mm)"));
+
+                    Console.WriteLine();
+                    if (e.Bookings.Count == 0)
+                    {
+                        Console.WriteLine("\tNo Bookings");
+                        Console.WriteLine("\n");
+                    }
+                    else
+                    {
+                        Console.WriteLine("\tBookings:");
+                        for (int j = 0; j < e.Bookings.Count; j++)
+                        {
+                            Booking b = e.Bookings.Values.ToArray()[j];
+                            Console.WriteLine("Id:      " + b.Id);
+                            Console.WriteLine("Name:    " + b.CustomerDetails.Name);
+                            Console.WriteLine("Address: " + b.CustomerDetails.Address);
+                            Console.WriteLine("Tickets: " + b.Id);
+                            Console.WriteLine("Price:   {0:c}", b.Price);
+                            Console.WriteLine("\n");
+                        }
+                    }
                 }
-            }
+            else
+                Console.WriteLine("\tThere are no events");
         }
 
         private static void DisplayAllTransactions()
         {
+            Console.Clear();
+
             List<Log> trans = new List<Log>(Log.TransactionLog);
 
             if (trans.Count > 0)
@@ -296,14 +347,15 @@ namespace EventsManagementSystemOOP
                             Console.WriteLine($"\t\tCode:       " + d.ev.Id);
                             Console.WriteLine($"\t\tName:       " + d.ev.Name);
                             Console.WriteLine($"\t\tTickets:    {d.ev.NumberOfTicketsLeft} / {d.ev.NumberOfTicketsOverall}");
-                            Console.WriteLine($"\t\tPrice:      " + d.ev.PricePerTicket);
+                            Console.WriteLine("\t\tPrice:      {0:c}", d.ev.PricePerTicket);
                             Console.WriteLine($"\t\tDate added: " + d.ev.DateAdded.ToString("dd/mm/yyyy"));
                             break;
                         case Log.LogDetails.TransType.Update:
                             Console.WriteLine($"\t\tCode:         " + d.ev.Id);
                             Console.WriteLine($"\t\tName:         " + d.ev.Name);
                             Console.WriteLine($"\t\tTickets:      {d.ev.NumberOfTicketsLeft} / {d.ev.NumberOfTicketsOverall}");
-                            Console.WriteLine($"\t\tPrice:        " + d.ev.PricePerTicket);
+                            //Console.WriteLine($"\t\tPrice:       £" + d.ev.PricePerTicket);
+                            Console.WriteLine("\t\tPrice:      {0:c}", d.ev.PricePerTicket);
                             Console.WriteLine($"\t\tDate added:   " + d.ev.DateAdded.ToString("dd/mm/yyyy"));
                             Console.WriteLine($"\t\tDate updated: " + d.ev.DateUpdated.ToString("dd/mm/yyyy"));
                             break;
@@ -367,6 +419,8 @@ namespace EventsManagementSystemOOP
                 Console.ForegroundColor = ConsoleColor.Gray;
                 num = MenuResponse();
 
+                Console.WriteLine();
+
                 switch (num)
                 {
                     case ADD_EVENT:
@@ -402,17 +456,17 @@ namespace EventsManagementSystemOOP
 
         private static void DisplayMenu()
         {
-            Console.WriteLine($"1  >  Add an event");
-            Console.WriteLine($"2  >  Update an event");
-            Console.WriteLine($"3  >  Delete an event");
+            Console.WriteLine($"1\t- Add an event");
+            Console.WriteLine($"2\t- Update an event");
+            Console.WriteLine($"3\t- Delete an event");
             Console.WriteLine();
-            Console.WriteLine($"4  >  Book tickets");
-            Console.WriteLine($"5  >  Remove a booking");
+            Console.WriteLine($"4\t- Book tickets");
+            Console.WriteLine($"5\t- Remove a booking");
             Console.WriteLine();
-            Console.WriteLine($"6  >  View all events");
-            Console.WriteLine($"7  >  View transaction log");
+            Console.WriteLine($"6\t- View all events");
+            Console.WriteLine($"7\t- View transaction log");
             Console.WriteLine();
-            Console.WriteLine($"8  >  Exit");
+            Console.WriteLine($"8\t- Exit");
 
             Console.WriteLine();
         }
@@ -435,7 +489,7 @@ namespace EventsManagementSystemOOP
                     {
                         res = num;
                     }
-                    else { DisplayMessage(msg: "Please enter a number between 1 and 7"); }
+                    else { DisplayMessage(msg: "Please enter a number between 1 and " + EXIT); }
                 }
                 catch (OverflowException) { DisplayMessage(msg: "Too many characters", isError: true, colorAfter: ConsoleColor.Gray); }
                 catch (FormatException) { DisplayMessage(msg: "Please enter a number", isError: true, colorAfter: ConsoleColor.Gray); }

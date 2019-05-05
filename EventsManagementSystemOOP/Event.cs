@@ -53,26 +53,9 @@ namespace EventsManagementSystemOOP
         {
             Event e = null;
 
-            int min = 1;
-            int max = Events.Count - 1;
-            int mid = (min + max) / 2;
-
-            while (1 <= Events.Count && e == null)
+            if (Events.ContainsKey(code))
             {
-                mid = (min + max) / 2;
-
-                if (code == Events[mid].Id)
-                {
-                    e = Events[mid];
-                }
-                else if (code < Events[mid].Id)
-                {
-                    max = mid - 1;
-                }
-                else
-                {
-                    min = mid + 1;
-                }
+                e = Events[code];
             }
 
             return e;
@@ -104,7 +87,7 @@ namespace EventsManagementSystemOOP
 
             try
             {
-                if (NumberOfTicketsOverall <= (NumberOfTicketsLeft - 1))
+                if (NumberOfTicketsLeft - b.NumberOfTickets >= 0)
                 {
                     b.Event = this;
 
