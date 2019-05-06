@@ -84,17 +84,27 @@ namespace EventsManagementSystemOOP
             {
                 try
                 {
+                    bool exp;
+
                     do
                     {
+
                         DisplayMessage(msg: str, hasNewLine: false);
                         result = int.Parse(Console.ReadLine());
-                    } while (result.Value <= min);
+
+                        exp = result.Value < min;
+
+                        if (exp)
+                        {
+                            DisplayMessage(msg: $"Please enter a valid number of {min}+", isError: true);
+                        }
+                    } while (exp);
 
                     dataOK = true;
                 }
                 catch (Exception)
                 {
-                    DisplayMessage(msg: "Please enter a valid number (" + min + "+)", isError: true);
+                    DisplayMessage(msg: "Please enter a valid number", isError: true);
                 }
             }
             while (!dataOK);
@@ -153,8 +163,8 @@ namespace EventsManagementSystemOOP
         private static void AddAnEvent()
         {
             string name = GetName("Event");
+            int places = GetNumber(str: "Number of tickets: ", min: 1);
             double price = GetPrice();
-            int places = GetNumber(str: "Number of tickets: ");
 
             Event e = new Event(name: name, pricePerTicket: price, numOfPlaces: places);
 
