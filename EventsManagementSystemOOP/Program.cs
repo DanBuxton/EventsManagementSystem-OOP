@@ -11,8 +11,8 @@ namespace EventsManagementSystemOOP
         private const int ADD_EVENT = 1;
         private const int UPDATE_EVENT = 2;
         private const int DELETE_EVENT = 3;
-        private const int BOOK_TICKETS = 4;
 
+        private const int BOOK_TICKETS = 4;
         private const int CANCEL_BOOKING = 5;
 
         private const int DISPLAY_EVENTS = 6;
@@ -25,6 +25,48 @@ namespace EventsManagementSystemOOP
             const char YES = 'y';
             const char NO = 'n';
             char choice = 'y';
+
+            //Event e = new Event("Staffs Hackathon", 124, 12.98)
+            //{
+            //    DateAdded = new DateTime(2019, 5, 6, 15, 26, 30)
+            //};
+            //Log l = new Log(new Log.LogDetails(e, Log.LogDetails.TransType.Add))
+            //{
+            //    DateOfTransaction = e.DateAdded
+            //};
+
+            //Booking[] books = e.Bookings.Values.ToArray();
+
+            //int placesToAdd = 124;
+
+            //int placesLeft = e.NumberOfTicketsLeft;
+            //int places = e.NumberOfTicketsOverall;
+            //double oldPrice = e.PricePerTicket;
+
+            //Event.DeleteEvent(e.Id);
+
+            //e = new Event("Hackathon", placesToAdd + places, 13.98) { Id = e.Id, DateAdded = e.DateAdded, DateUpdated = DateTime.Now };
+            ////e.NumberOfTicketsLeft -= placesLeft + placesToAdd;
+
+            //foreach (Booking b in books)
+            //{
+            //    b.Price = oldPrice;
+
+            //    e.AddBooking(b);
+
+            //    e.NumberOfTicketsLeft -= b.NumberOfTickets;
+            //}
+
+            //Log l2 = (new Log(new Log.LogDetails(ob: e, type: Log.LogDetails.TransType.Update)));
+
+
+
+            //e.AddBooking(new Booking(new Booking.Customer("Steve", "Staffs Uni, Stoke, ST4"), 124));
+            //e.NumberOfTicketsLeft -= 124;
+            //Log l3 = new Log(new Log.LogDetails(Event.GetEvent(1).Bookings[1], Log.LogDetails.TransType.Book))
+            //{
+            //    DateOfTransaction = e.DateAdded.AddSeconds(29)
+            //};
 
             while (choice == YES)
             {
@@ -182,14 +224,26 @@ namespace EventsManagementSystemOOP
             if (e != null)
             {
                 string name = GetName("Event");
-                int places = GetNumber(str: "Number of tickets: ", min: 1);
+                int placesToAdd = GetNumber(str: "Number of tickets to add: ", min: 0);
                 double price = GetPrice();
 
-                e.Name = name;
-                e.PricePerTicket = price;
-                e.NumberOfTicketsOverall = places;
-                e.NumberOfTicketsLeft += places;
-                e.DateUpdated = DateTime.Now;
+                Booking[] books = e.Bookings.Values.ToArray();
+
+                int placesLeft = e.NumberOfTicketsLeft;
+                int places = e.NumberOfTicketsOverall;
+                double oldPrice = e.PricePerTicket;
+
+                Event.DeleteEvent(e.Id);
+
+                e = new Event(name, placesToAdd + places, price) { Id = e.Id, DateAdded = e.DateAdded, DateUpdated = DateTime.Now };
+                //e.NumberOfTicketsLeft = placesLeft + placesToAdd;
+
+                foreach (Booking b in books)
+                {
+                    b.Price = oldPrice;
+                    e.AddBooking(b);
+                    e.NumberOfTicketsLeft -= b.NumberOfTickets;
+                }
 
                 Log l = (new Log(new Log.LogDetails(ob: e, type: Log.LogDetails.TransType.Update)));
             }
@@ -223,8 +277,19 @@ namespace EventsManagementSystemOOP
             {
                 string cName = GetName("Customer");
 
-                DisplayMessage(msg: "Customer Address: ", hasNewLine: false);
-                string cAddress = Console.ReadLine();
+                string cAddress = "";
+
+                while (cAddress.Length < 9)
+                {
+                    DisplayMessage(msg: "Customer Address: ", hasNewLine: false);
+                    cAddress = Console.ReadLine();
+
+                    if (cAddress.Length < 9)
+                    {
+                        DisplayMessage(msg: $"Address must be longer than {8}", isError: true);
+                    }
+                }
+
 
                 int tickets = GetNumber(str: "Number of tickets: ", min: 1);
 
@@ -234,8 +299,7 @@ namespace EventsManagementSystemOOP
 
                     if (e.AddBooking(b))
                     {
-                        DisplayMessage(msg: $"Booking code: {b.Id}\nPrice: {0:c}");
-                        DisplayMessage(msg: $"Booking code: {b.Id}\nPrice: {b.Price:c}");
+                        DisplayMessage(msg: $"\tBooking code: {b.Id}\n\tPrice: {b.Price:c}");
 
                         e.NumberOfTicketsLeft -= tickets;
 
@@ -273,6 +337,10 @@ namespace EventsManagementSystemOOP
 
                 if (e.RemoveBooking(b))
                 {
+                    e.NumberOfTicketsLeft += b.NumberOfTickets;
+
+                    DisplayMessage(msg: "\tBooking successfully removed");
+
                     Log l = (new Log(new Log.LogDetails(ob: b, type: Log.LogDetails.TransType.Cancel)));
                 }
                 else
@@ -290,18 +358,18 @@ namespace EventsManagementSystemOOP
         {
             Console.Clear();
 
-            Console.WriteLine("Events");
+            Console.WriteLine("Events (" + Event._TotalNumberOfEvents + ")");
 
             if (Event._TotalNumberOfEvents > 0)
                 for (int i = 0; i < Event._TotalNumberOfEvents; i++)
                 {
                     Event e = Event.Events.Values.ToArray()[i];
 
-                    Console.WriteLine("\tId:    " + e.Id);
-                    Console.WriteLine("\tName:  " + e.Name);
-                    Console.WriteLine($"\tId:    {e.NumberOfTicketsLeft}/{e.NumberOfTicketsOverall}");
-                    Console.WriteLine("\tPrice: {0:c}", e.PricePerTicket);
-                    Console.WriteLine("\tAdded: " + e.DateAdded.ToString("dd/mm/yyyy (HH:mm)"));
+                    Console.WriteLine("\tId:      " + e.Id);
+                    Console.WriteLine("\tName:    " + e.Name);
+                    Console.WriteLine($"\tTickets: {e.NumberOfTicketsLeft}/{e.NumberOfTicketsOverall} left");
+                    Console.WriteLine("\tPrice:   {0:c}", e.PricePerTicket);
+                    Console.WriteLine("\tAdded:   " + e.DateAdded.ToString("dd/MM/yyyy (HH:mm)"));
 
                     Console.WriteLine();
                     if (e.Bookings.Count == 0)
@@ -311,15 +379,15 @@ namespace EventsManagementSystemOOP
                     }
                     else
                     {
-                        Console.WriteLine("\tBookings:");
+                        Console.WriteLine("\tBookings: (" + e.Bookings.Count + ")");
                         for (int j = 0; j < e.Bookings.Count; j++)
                         {
                             Booking b = e.Bookings.Values.ToArray()[j];
-                            Console.WriteLine("Id:      " + b.Id);
-                            Console.WriteLine("Name:    " + b.CustomerDetails.Name);
-                            Console.WriteLine("Address: " + b.CustomerDetails.Address);
-                            Console.WriteLine("Tickets: " + b.Id);
-                            Console.WriteLine("Price:   {0:c}", b.Price);
+                            Console.WriteLine("\t\tId:      " + b.Id);
+                            Console.WriteLine("\t\tName:    " + b.CustomerDetails.Name);
+                            Console.WriteLine("\t\tAddress: " + b.CustomerDetails.Address);
+                            Console.WriteLine("\t\tTickets: " + b.NumberOfTickets);
+                            Console.WriteLine("\t\tPrice:   {0:c}", b.Price);
                             Console.WriteLine("\n");
                         }
                     }
@@ -352,30 +420,29 @@ namespace EventsManagementSystemOOP
                         case Log.LogDetails.TransType.Add:
                             Console.WriteLine($"\t\tCode:       " + d.ev.Id);
                             Console.WriteLine($"\t\tName:       " + d.ev.Name);
-                            Console.WriteLine($"\t\tTickets:    {d.ev.NumberOfTicketsLeft} / {d.ev.NumberOfTicketsOverall}");
+                            Console.WriteLine($"\t\tTickets:    {d.ev.NumberOfTicketsLeft} / {d.ev.NumberOfTicketsOverall} left");
                             Console.WriteLine("\t\tPrice:      {0:c}", d.ev.PricePerTicket);
                             Console.WriteLine($"\t\tDate added: " + d.ev.DateAdded.ToString("dd/mm/yyyy"));
                             break;
                         case Log.LogDetails.TransType.Update:
                             Console.WriteLine($"\t\tCode:         " + d.ev.Id);
                             Console.WriteLine($"\t\tName:         " + d.ev.Name);
-                            Console.WriteLine($"\t\tTickets:      {d.ev.NumberOfTicketsLeft} / {d.ev.NumberOfTicketsOverall}");
-                            //Console.WriteLine($"\t\tPrice:       £" + d.ev.PricePerTicket);
-                            Console.WriteLine("\t\tPrice:      {0:c}", d.ev.PricePerTicket);
-                            Console.WriteLine($"\t\tDate added:   " + d.ev.DateAdded.ToString("dd/mm/yyyy"));
-                            Console.WriteLine($"\t\tDate updated: " + d.ev.DateUpdated.ToString("dd/mm/yyyy"));
+                            Console.WriteLine($"\t\tTickets:      {d.ev.NumberOfTicketsLeft} / {d.ev.NumberOfTicketsOverall} left");
+                            Console.WriteLine("\t\tPrice:        {0:c}", d.ev.PricePerTicket);
+                            Console.WriteLine($"\t\tDate added:   " + d.ev.DateAdded.ToString("dd/MM/yyyy (HH:mm)"));
+                            Console.WriteLine($"\t\tDate updated: " + d.ev.DateUpdated.ToString("dd/MM/yyyy (HH:mm)"));
                             break;
                         case Log.LogDetails.TransType.Delete:
-                            Console.WriteLine("\t\tCode: " + d.ev.Id + ";");
+                            Console.WriteLine("\t\tCode: " + d.ev.Id);
                             break;
                         case Log.LogDetails.TransType.Book:
-                            Console.WriteLine("\t\tEvent Code: " + d.b.Event.Id + ";");
-                            Console.WriteLine("\t\tBooking Code: " + d.b.Id + ";");
-                            Console.WriteLine("\t\tNum tickets: " + d.b.NumberOfTickets + ";");
+                            Console.WriteLine("\t\tEvent Code: " + d.b.Event.Id);
+                            Console.WriteLine("\t\tBooking Code: " + d.b.Id);
+                            Console.WriteLine("\t\tNum tickets: " + d.b.NumberOfTickets);
                             break;
                         case Log.LogDetails.TransType.Cancel:
-                            Console.WriteLine("\t\tBooking Code: " + d.b.Id + ";");
-                            Console.WriteLine("\t\tNum tickets:  " + d.b.NumberOfTickets + ";");
+                            Console.WriteLine("\t\tBooking Code: " + d.b.Id);
+                            Console.WriteLine("\t\tTickets:  " + d.b.NumberOfTickets);
                             break;
                     }
                     Console.WriteLine();

@@ -10,7 +10,7 @@ namespace EventsManagementSystemOOP
     {
         public static List<Log> TransactionLog { get; set; } = new List<Log>();
 
-        public static int _PrevID { private get; set; } = 0;
+        public static int _PrevID { get; set; } = 0;
         public int Id { get; set; } = ++_PrevID;
 
         public LogDetails Details { get; set; }

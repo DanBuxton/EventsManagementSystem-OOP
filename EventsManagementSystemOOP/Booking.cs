@@ -8,14 +8,16 @@ namespace EventsManagementSystemOOP
 {
     public sealed class Booking
     {
-        public static int _TotalNumberOfBookings = 0;
+        public static int _TotalNumberOfBookings { get; set; } = 0;
         public static int _PrevId { get; set; } = 0;
         public int Id { get; set; } = ++_PrevId;
 
 
         public Customer CustomerDetails { get; private set; }
         public int NumberOfTickets { get; private set; }
-        public double Price { get => NumberOfTickets * Event.PricePerTicket; }
+
+        private double price = 5.99;
+        public double Price { get => NumberOfTickets * price; internal set => price = value; }
 
         public Event Event { get; internal set; }
 
