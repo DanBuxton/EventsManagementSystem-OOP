@@ -87,7 +87,14 @@ namespace EventsManagementSystemOOP
 
         public static bool DeleteEvent(int id)
         {
-            return Events.Remove(id);
+            bool ok = Events.Remove(id);
+
+            if (ok)
+            {
+                _TotalNumberOfEvents--;
+            }
+
+            return ok;
         }
 
         public void AddTickets(int amount)
